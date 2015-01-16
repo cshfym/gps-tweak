@@ -1,122 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta name="layout" content="main"/>
-		<title>Welcome to Grails</title>
-		<style type="text/css" media="screen">
-			#status {
-				background-color: #eee;
-				border: .2em solid #fff;
-				margin: 2em 2em 1em;
-				padding: 1em;
-				width: 12em;
-				float: left;
-				-moz-box-shadow: 0px 0px 1.25em #ccc;
-				-webkit-box-shadow: 0px 0px 1.25em #ccc;
-				box-shadow: 0px 0px 1.25em #ccc;
-				-moz-border-radius: 0.6em;
-				-webkit-border-radius: 0.6em;
-				border-radius: 0.6em;
-			}
+<head>
+    <meta name="layout" content="main" />
+    <style type="text/css">
+        #body-wrap { }
+        #map-canvas { height: 600px; width: 800px; margin: 10px; float: left; border: 1px solid #808080; }
+        #map-output { margin: 10px; float: left; border: 1px solid #808080; width: 250px; height: 600px; }
+    </style>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?libraries=drawing&key=AIzaSyDFNVettz0sCxPVseEbOcutlru2jFirh5E">
+    </script>
+    <script type="text/javascript">
+        var map;
+        var markers = [];
 
-			.ie6 #status {
-				display: inline; /* float double margin fix http://www.positioniseverything.net/explorer/doubled-margin.html */
-			}
+        function initialize() {
+            var haightAshbury = new google.maps.LatLng(37.7699298, -122.4469157);
+            var mapOptions = {
+                center: haightAshbury,
+                zoom: 15
+            };
 
-			#status ul {
-				font-size: 0.9em;
-				list-style-type: none;
-				margin-bottom: 0.6em;
-				padding: 0;
-			}
-            
-			#status li {
-				line-height: 1.3;
-			}
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-			#status h1 {
-				text-transform: uppercase;
-				font-size: 1.1em;
-				margin: 0 0 0.3em;
-			}
+            var drawingManager = new google.maps.drawing.DrawingManager();
+            drawingManager.setMap(map);
 
-			#page-body {
-				margin: 2em 1em 1.25em 18em;
-			}
+            google.maps.event.addListener(map, 'click', function(event) {
+                addMarker(event.latLng);
+            });
+        }
 
-			h2 {
-				margin-top: 1em;
-				margin-bottom: 0.3em;
-				font-size: 1em;
-			}
+        // Add a marker to the map and push to the array.
+        function addMarker(location) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+            markers.push(marker);
 
-			p {
-				line-height: 1.5;
-				margin: 0.25em 0;
-			}
+            $("map-output").innerHTML = marker.getPosition();
+            map.panTo(location);
+        }
 
-			#controller-list ul {
-				list-style-position: inside;
-			}
+        google.maps.event.addDomListener(window, 'load', initialize);
 
-			#controller-list li {
-				line-height: 1.3;
-				list-style-position: inside;
-				margin: 0.25em 0;
-			}
+    </script>
+</head>
+<body>
 
-			@media screen and (max-width: 480px) {
-				#status {
-					display: none;
-				}
+<div id="body-wrap">
+    <g:javascript library="application" />
+    <r:layoutResources />
 
-				#page-body {
-					margin: 0 1em 1em;
-				}
+    <div id="map-canvas"></div>
+    <div id="map-output"></div>
+</div>
 
-				#page-body h1 {
-					margin-top: 0;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-		<div id="status" role="complementary">
-			<h1>Application Status</h1>
-			<ul>
-				<li>App version: <g:meta name="app.version"/></li>
-				<li>Grails version: <g:meta name="app.grails.version"/></li>
-				<li>Groovy version: ${org.codehaus.groovy.runtime.InvokerHelper.getVersion()}</li>
-				<li>JVM version: ${System.getProperty('java.version')}</li>
-				<li>Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</li>
-				<li>Controllers: ${grailsApplication.controllerClasses.size()}</li>
-				<li>Domains: ${grailsApplication.domainClasses.size()}</li>
-				<li>Services: ${grailsApplication.serviceClasses.size()}</li>
-				<li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
-			</ul>
-			<h1>Installed Plugins</h1>
-			<ul>
-				<g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
-					<li>${plugin.name} - ${plugin.version}</li>
-				</g:each>
-			</ul>
-		</div>
-		<div id="page-body" role="main">
-			<h1>Welcome to Grails</h1>
-			<p>Congratulations, you have successfully started your first Grails application! At the moment
-			   this is the default page, feel free to modify it to either redirect to a controller or display whatever
-			   content you may choose. Below is a list of controllers that are currently deployed in this application,
-			   click on each to execute its default action:</p>
-
-			<div id="controller-list" role="navigation">
-				<h2>Available Controllers:</h2>
-				<ul>
-					<g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-						<li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
-					</g:each>
-				</ul>
-			</div>
-		</div>
-	</body>
+</body>
 </html>
